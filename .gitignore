@@ -1,6 +1,7 @@
 # Ignore credentials file
 .vscode
 settings.json
+settings-copy.json
 
 # Others
 .DS_Store

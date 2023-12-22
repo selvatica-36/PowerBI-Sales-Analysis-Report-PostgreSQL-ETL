@@ -32,16 +32,16 @@ class InfoExtractor(DatabaseConnector):
     def __init__(self, config_file_path, output_folder):
         super.__init__(config_file_path, output_folder)
 
-    def export_column_names_to_csv(self, cursor, table_name, csv_path):
+    def export_table_columns_to_csv(self, cursor, table_name, csv_path):
         with open(csv_path, "w", newline="") as csv_file:
             csv_writer = csv.writer(csv_file)
             # Get column names and data types
             cursor.execute(f"SELECT column_name, data_type FROM information_schema.columns WHERE table_name = '{table_name}'")
             columns = cursor.fetchall()
-            csv_writer.writerow([column[0] for column in columns])  # Write column headers
-            cursor.copy_expert(f"COPY (SELECT * FROM {table_name}) TO STDOUT WITH CSV HEADER;", csv_file)
+            csv_writer.writerow(["Column Name", "Data Type"])  # Write custom column headers
+            csv_writer.writerows(columns)
 
-    def export_col_names_all_tables_to_csv(self):
+    def export_all_table_columns(self):
         connection_params = self.read_config()
         with self.connect_to_database(connection_params) as conn:
             with conn.cursor() as cursor:
@@ -49,9 +49,11 @@ class InfoExtractor(DatabaseConnector):
                 # Loop through each table and export its columns to a CSV file
                 for table in tables:
                     csv_path = os.path.join(self.output_folder, f"{table}_columns.csv")
-                    self.export_column_names_to_csv(cursor, table, csv_path)
+                    self.export_table_columns_to_csv(cursor, table, csv_path)
+
     
 
-
 if __name__ == "__main__":
-    pass
+    output_folder = '/Users/silviaaragon/Aicore/Online-Shopping-in-Retail-Report/SQL-queries/database-info'
+    exporter = InfoExtractor(output_folder)
+    exporter.export_all_table_columns()

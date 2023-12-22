@@ -1,7 +1,5 @@
-total_sales,percentage_of_total_sales,order_count,store_type
-store_type,total_sales,percentage_of_total_sales,order_count
-Web Portal,1067.7700000000002,0.01652860825050631,43
-Outlet,508029.4100000015,7.864071005577864,9207
-Mall Kiosk,705645.8999999899,10.923087036230445,13142
-Local,4200344.269999866,65.01947512674705,78409
-Super Store,1045045.1899999839,16.17683822319944,19276
+Column Name,Data Type
+total_sales,double precision
+percentage_of_total_sales,double precision
+order_count,bigint
+store_type,text

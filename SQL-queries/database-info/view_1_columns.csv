@@ -1,7 +1,4 @@
-total_sales,count_of_orders,store_type
-store_type,total_sales,count_of_orders
-Local,313324,78409
-Mall Kiosk,53374,13142
-Outlet,36647,9207
-Super Store,78094,19276
-Web Portal,137,43
+Column Name,Data Type
+total_sales,numeric
+count_of_orders,bigint
+store_type,text

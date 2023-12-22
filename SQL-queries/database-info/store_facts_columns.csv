@@ -1,7 +1,5 @@
-Total Revenue,Total Revenue / Out Of Total Revenue Across Rows,Orders,Store Type
-Store Type,Total Revenue,Total Revenue / Out Of Total Revenue Across Rows,Orders
-Local,4200344.269999742,0.6501947512674258,78409
-Mall Kiosk,705645.9000000042,0.1092308703623024,13142
-Outlet,508029.41000000003,0.07864071005577536,9207
-Super Store,1045045.1900000055,0.16176838223199144,19276
-Web Portal,1067.77,0.00016528608250505664,43
+Column Name,Data Type
+Total Revenue,double precision
+Total Revenue / Out Of Total Revenue Across Rows,double precision
+Orders,bigint
+Store Type,text

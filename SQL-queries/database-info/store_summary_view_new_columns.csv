@@ -1,7 +1,3 @@
-total_sales,store_type
-store_type,total_sales
-Local,4200344.269999752
-Mall Kiosk,705645.9000000028
-Outlet,508029.4100000014
-Super Store,1045045.1900000123
-Web Portal,1067.77
+Column Name,Data Type
+total_sales,double precision
+store_type,text

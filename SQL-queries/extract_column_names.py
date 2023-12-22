@@ -13,7 +13,7 @@ conn = psycopg2.connect(**connection_params)
 cursor = conn.cursor()
 
 # Get the path to the folder where you want to save CSV files
-output_folder = '/Users/silviaaragon/Aicore/Online-Shopping-in-Retail-Report/SQL-queries/data-info'
+output_folder = '/Users/silviaaragon/Aicore/Online-Shopping-in-Retail-Report/SQL-queries/database-info'
 
 # Get a list of tables in the database
 cursor.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';")
@@ -27,13 +27,9 @@ for table in tables:
         # Get column names and data types
         cursor.execute(f"SELECT column_name, data_type FROM information_schema.columns WHERE table_name = '{table}'")
         columns = cursor.fetchall()
-        csv_writer.writerow([column[0] for column in columns])  # Write column headers
-        # Use the COPY (SELECT ...) TO variant to export data to the CSV file
-        cursor.copy_expert(f"COPY (SELECT * FROM {table}) TO STDOUT WITH CSV HEADER;", csv_file)
-
+        csv_writer.writerow(["Column Name", "Data Type"])  # Write custom column headers
+        csv_writer.writerows(columns)
 
 # Close the database connection
 cursor.close()
 conn.close()
-
-

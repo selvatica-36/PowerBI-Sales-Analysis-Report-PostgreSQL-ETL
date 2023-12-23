@@ -39,12 +39,46 @@ Later in the project, we will be connecting remotely to a database stored in Azu
  
 ## 3. Importing Data into Power BI
  
-The first phase focuses on data loading and preparation. 
+The first phase focuses on data loading and preparation. Each table was uploaded from a different source. The tables downloaded from Azure required specific credentials provided by AiCore (unavailable in this repository). 
+
+To import data into Power BI, go to **Get Data** menu and find the appropriate option. 
+
+| **Table** | **Type**  | **Imported from**            |
+|-----------|-----------|------------------------------|
+| Orders    | Facts     | Azure SQL Database           |
+| Customers | Dimension | Combining 3 local .csv files |
+| Products  | Dimension | Local .csv file              |
+| Stores    | Dimension | Azure Blob Storage           |
  
  
-## 4. Transforming Data in Power Query Editor
- 
- 
+## 4. Data Cleaning: Transforming Data in Power Query Editor
+After importing all tables to Power BI, I performed some transformations in the Power Query Editor, to clean the data, fix column naming, data types and transform some columns into a more usable format.
+
+### Orders table: Transformations
+
+| **Action** | **Column/Condition**  | **Reason**            |
+|-----------|-----------|------------------------------|
+| Delete column   | Card number     | Ensure data privacy           |
+| Delete rows | If value is null | Ensure data integrity |
+| Split datetime column  | Order date | Split into a date column and a time column             |
+| Split datetime column   | Shipping date | Split into a date column and a time column           |
+
+### Products table: Transformations
+
+
+| **Action**        | **Column/Condition**         | **Reason** | **Method** |
+|-------------------|------------------------------|------------|------------|
+| Remove duplicates | Product code                              | Ensure each product code is unique           |            |
+| Split column      | weight (e.g. values: 10g)                             | Into weight values column and units column           |            |
+| Fix datatype      | weight values column                             | To decimal           |            |
+| Calculated column | new column name: weight (kg)                             | Calculated from weight values and weight units column, to transform all values to kg           |            |
+| Delete columns    | weight values / weight units | No longer needed           | Delete           |
+
+
+
+*This is done outside Power Query Editor, using DAX in Data View > New Calculated Column.
+
+
 ## 5. Creating the Data Model
 hhhh
 

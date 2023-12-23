@@ -1,6 +1,8 @@
-# Online Shopping in Retail Report using Power BI and SQL
-## Summary
-Welcome! Join me on a learning journey in **Power BI** and **SQL**, to create an industry-standard, interactive and comprehensive report.  We will be working on a realistic online retail dataset, and extracting valuable insights to inform business decisions.
+# Online Shopping Report: Evaluating Sales Performance in a Multinational Retail Company
+## Stack: Power BI and PostgreSQL
+
+### Summary
+**Welcome!** Join me on a learning journey in **Power BI** and **SQL**, to create an industry-standard, interactive and comprehensive report.  We will be working on a realistic online retail dataset, and extracting valuable insights to inform business decisions.
  
 In the first part of the project, we will focus on data cleaning, creation of a STAR-based data model and subsequent development of the Power BI report. However, not all clients will have access to Power tools like Power BI desktop or Service. We want to ensure that data insights can still be extracted and shared with a broader audience. For this reason, the second objective focuses on creating SQL queries to extract and disseminate key data in a different way. These queries will answer common questions that clients might have.
  
@@ -19,19 +21,21 @@ This documentation will also include a detailed guide into Power BI data modelli
 
 ## 1. Setting Up
  
-This project requires downloading Power BI desktop: [insert link here]
+This project requires downloading Power BI desktop: https://www.microsoft.com/en-gb/download/details.aspx?id=58494
+
 As it is only available in Windows machines, users of other operating systems will want to download the program in a virtual machine, such as Azure's Windows VM.
+
 Later in the project, we will be connecting remotely to a database stored in Azure's cloud platform. The user may want to download VSCode and the SQLTools extension for this purpose. 
  
 ## 2. Tables in our Dataset
  
-The Orders table is the main fact table. It contains information about each order, including the order and shipping dates, the customer, store and product IDs for associating with dimension tables, and the amount of each product ordered. Each order in this table consists of an order of a single product type, so there is only one product code per order.
+- The **Orders** table is the main fact table. It contains information about each order, including the order and shipping dates, the customer, store and product IDs for associating with dimension tables, and the amount of each product ordered. Each order in this table consists of an order of a single product type, so there is only one product code per order.
  
-The Products table contains information about each product sold by the company, including the product code, name, category, cost price, sale price, and weight.
+- The **Products** table contains information about each product sold by the company, including the product code, name, category, cost price, sale price, and weight.
  
-The Stores table contains information about each store, including the store code, store type, country, region, and address.
+- The **Stores** table contains information about each store, including the store code, store type, country, region, and address.
  
-The Customers table contains names and personal details of all customers. 
+- The **Customers** table contains names and personal details of all customers. 
  
 ## 3. Importing Data into Power BI
  
@@ -42,6 +46,9 @@ The first phase focuses on data loading and preparation.
  
  
 ## 5. Creating the Data Model
+
+
+[]
 
 ## 6. Power BI Report
  

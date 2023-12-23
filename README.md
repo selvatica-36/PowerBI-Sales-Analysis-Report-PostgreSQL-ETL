@@ -18,9 +18,9 @@ This interactive and comprehensive Power BI report contains four pages, includin
 2. [In this Repository](#2-in-this-repository)
 3. [Tables in our Dataset](#3-tables-in-our-dataset)
 4. [Importing Data into Power BI](#4-importing-data-into-power-bi)
-5. [Transforming Data in Power Query Editor](#5-transforming-data-in-power-query-editor)
+5. [Data Cleaning: Transforming Data in Power Query Editor](#5-data-cleaning-transforming-data-in-power-query-editor)
 6. [Creating the Data Model](#6-creating-the-data-model)
-7. [Power BI Report](#7-power-BI-report)
+7. [Power BI Report](#7-power-bi-report)
 8. [SQL Metrics for Users Outside the Company](#8-sql-metrics-for-users-outside-the-company)
 
 ## 1. Setting Up
@@ -31,8 +31,7 @@ As it is only available in Windows machines, users of other operating systems wi
 
 Later in the project, we will be connecting remotely to a database stored in Azure's cloud platform. The user may want to download VSCode and the SQLTools extension for this purpose. 
 
-*Optional*: The user may want to install the psycopg2 library to automate sql queries with python (
-```pip install psycopg2```).
+*Optional*: The user may want to install the psycopg2 library to automate sql queries with python (```pip install psycopg2```).
  
 ## 2. In this Repository
 These are the files you will find in this repository:
@@ -142,62 +141,102 @@ To do this, I had to first set up the following columns:
 - New calculated column `Full region` in the **Stores** table, containing the values on the `Stores[Country Region]`, and `Store[Country]` columns, separated by a comma and a space. 
 
 ### Measures Table
-Before adding visualisations, we need to create a `Measures Table ` in the data view. This should contain one column and one row, and we should then hide this column. We can now proceed to add new measures, using DAX. These measures will be used by Power BI to set up visualisations by performing the right calculations of the data. Examples of these include `Total Profit`, `Profit YTD`, `Total Revenue`, `Total Orders`, and many more. Please refer to the .pbix file in the repository for more information.
+Before adding visualisations, we need to create a `Measures Table ` in the data view. This should contain one column and one row, and we should then hide this column. We can now proceed to add new measures, using DAX. These measures will be used by Power BI to set up visualisations by performing the right calculations of the data. Examples of these include `Total Profit`, `Profit YTD`, `Total Revenue`, `Total Orders`, and many more. Please refer to the .pbix file in the repository for more informations, including DAX formulas.
 
 ## 7. Power BI Report 
 ### Planning and Setting Up the Report
-The first step is to create all report pages. Go to `Report View` and add four oages, as follows:
+The first step is to create all report pages. Go to `Report View` and add four pages, as follows:
 - Executive Summary
 - Customer Detail
 - Product Detail
 - Stores Map
 
 ### Page 1: Executive Summary Page
- 
 
  ![alt text](/readme-images/executive.png)
  
  
 ### Page 2: Customer Detail Page
  
- 
  ![alt text](/readme-images/customer.png)
- 
- 
  
 ### Page 3: Product Detail Page
  
- 
- 
  ![alt text](/readme-images/product.png)
- 
- 
- 
- 
- 
- 
+
+Upon clicking on the top left Filter button, a slicer opens, letting up choose product category and country:
+
+ ![alt text](/readme-images/product_slicer.png)
+
+  
 ### Page 4: Stores Map Page
- 
  
  ![alt text](/readme-images/stores_map.png)
  
- 
 ***Creating a Stores Drillthrough Page***
+
+To make it easy for the region managers to check on the progress of a given store, we need to create a drillthrough page that summarises each store's performance. This page should open once the user click on a specific store on the map. 
+
+This drilltrhough page should be created as a new page in the report, and designed as drilltrough page. 
  
  ![alt text](/readme-images/drillthrough.png)
  
  
 ***Creating a Stores Tooltip Page***
  
- 
- 
+ To allow users to be able to see each store's year-to-date profit performance against the profit target just by hovering the mouse over a store on the map.
+
  ![alt text](/readme-images/tooltip.png)
  
  
 ### Fixing Cross-filtering and Navigation
 
+***Crossfiltering***
+
+To avoid unnecessary confusion and get the right message across, it is important that only the desired visuals can filter the rest. Power BI lets us control these cross-filtering interactions.
+
+From the Edit Interactions view in the Format tab of the ribbon, we can modify filtering interactions between visuals:
+
+`Executive Summary Page `
+- Product Category bar chart and Top 10 Products table should not filter the card visuals or KPIs
+- Top 10 Products table should not affect any other visuals 
+
+`Customer Detail Page`
+- Top 20 Customers table should not filter any of the other visuals
+- Total Customers by Product Donut Chart should not affect the Customers line graph
+- Total Customers by Country donut chart should cross-filter Total Customers by Product donut Chart 
+
+`Product Detail Page`
+- Orders vs. Profitability scatter graph should not affect any other visuals
+
+***Navigation Bar***
+
+A navigation bar was set up on the left side of each page, to allow navigation between pages of the report. To allow this functionality, we need to `Add Button` and turn `Action` to ON, select `Navigation` and the desired report page for each button. 
 
 ## 8. SQL Metrics for Users Outside the Company
+It is very common to encounter clients who don't have access to specialised visualisation tools like Power BI. Here, I use SQL queries as an additional tool of my data analysis toolkit. 
+
+### Step 1: Connect to remote SQL database
+The database in stored in Azure PostgreSQL database cloud platform. To connect to it, I established a new connection in SQLTools (inside VSCode), by providing the credentials obtained from AiCore. 
+
+### Step 2: Explore the contents of the remote database
+First, I queried the database to obtain a list of all table names (/database-info/table-list.csv).
+
+Then, I created another query to extract all column names from a specified table into a csv file (SQL query in: /SQL-queries/check_table_and_col_names.sql). The file can then be extracted into .csv using the SQLTools user interface (button just below query output).
+
+As there were many tables in the dataset, I decided to automate the column list query using python's psycopg2 package. This library allows us to connect to the database using our credentials and perform sql queries on it.
+
+### Step 3: Query the database to answer client's questions
+All queries and answers are stored in SQL-queries/client-queries folder, in this repository.
+The questions we have answered here are:
+ - ***Question 1***: How many staff are there in all of the UK stores? 
+ - ***Question 2***: Which month in 2022 has had the highest revenue?
+ - ***Question 3***: Which German store type had the highest revenue for 2022? 
+ - ***Question 4***: Create a view where the rows are the store types and the columns are the total sales, percentage of total sales and the count of orders. 
+ - ***Question 5***: Which product category generated the most profit for the "Wiltshire, UK" region in 2021?
+
+
+
 
 
 

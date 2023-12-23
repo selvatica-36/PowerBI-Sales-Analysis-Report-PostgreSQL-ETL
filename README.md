@@ -7,17 +7,21 @@
 In the first part of the project, we will focus on data cleaning, creation of a STAR-based data model and subsequent development of the Power BI report. However, not all clients will have access to Power tools like Power BI desktop or Service. We want to ensure that data insights can still be extracted and shared with a broader audience. For this reason, the second objective focuses on creating SQL queries to extract and disseminate key data in a different way. These queries will answer common questions that clients might have.
  
 This documentation will also include a detailed guide into Power BI data modelling and reporting. Let's dive in!
+
+### Project Preview
+This interactive and comprehensive Power BI report contains four pages, including an Executive Summary, a Customer Detail Page, a Product Detail Page and a Stores Map.
+
+![alt text](/readme-images/preview.png)
  
 ## Table of Contents
 1. [Setting Up](#1-setting-up)
-2. [Tables in our Dataset](#2-tables-in-our-dataset)
-3. [Importing Data into Power BI](#3-importing-data-into-power-bi)
-4. [Transforming Data in Power Query Editor](#4-transforming-data-in-power-query-editor)
-5. [Creating the Data Model](#5-creating-the-data-model)
-6. [Power BI Report](#6-power-BI-report)
-[Planning the Report](#6.1-planning-the-report)
-
-
+2. [In this Repository](#2-in-this-repository)
+3. [Tables in our Dataset](#3-tables-in-our-dataset)
+4. [Importing Data into Power BI](#4-importing-data-into-power-bi)
+5. [Transforming Data in Power Query Editor](#5-transforming-data-in-power-query-editor)
+6. [Creating the Data Model](#6-creating-the-data-model)
+7. [Power BI Report](#7-power-BI-report)
+8. [SQL Metrics for Users Outside the Company](#8-sql-metrics-for-users-outside-the-company)
 
 ## 1. Setting Up
  
@@ -26,8 +30,23 @@ This project requires downloading Power BI desktop: https://www.microsoft.com/en
 As it is only available in Windows machines, users of other operating systems will want to download the program in a virtual machine, such as Azure's Windows VM.
 
 Later in the project, we will be connecting remotely to a database stored in Azure's cloud platform. The user may want to download VSCode and the SQLTools extension for this purpose. 
+
+*Optional*: The user may want to install the psycopg2 library to automate sql queries with python (
+```pip install psycopg2```).
  
-## 2. Tables in our Dataset
+## 2. In this Repository
+These are the files you will find in this repository:
+- Main Power BI Report: `power-BI-online-retail-report.pbix`
+- **SQL-queries** folder, containing:
+    - SQL file to check table and column names: `check_table_and_col_names.sql`
+    - Python script to automate extraction of column names into csv files for all tables in the dataset, using psycopg2 library: `extract_col_names.py`
+    - Python utilities to connect to database and extract information, folowing OOP principles: `database_utils.py`
+    - **database-info** folder, containing all csv files extracted. Most files are named as {table name}_columns.csv: they list all column names in each dataset table. Also contains a `table-list.csv` file, containing a list of all tables in the database.
+    - **client-queries** folder, containing the sql queries (.sql files) and answers (.csv files) to some key stakeholder questions.
+- This `README.md` file.
+- `.gitignore` file
+
+## 3. Tables in our Dataset
  
 - The **Orders** table is the main fact table. It contains information about each order, including the order and shipping dates, the customer, store and product IDs for associating with dimension tables, and the amount of each product ordered. Each order in this table consists of an order of a single product type, so there is only one product code per order.
  
@@ -37,7 +56,7 @@ Later in the project, we will be connecting remotely to a database stored in Azu
  
 - The **Customers** table contains names and personal details of all customers. 
  
-## 3. Importing Data into Power BI
+## 4. Importing Data into Power BI
  
 The first phase focuses on data loading and preparation. Each table was uploaded from a different source. The tables downloaded from Azure required specific credentials provided by AiCore (unavailable in this repository). 
 
@@ -51,7 +70,7 @@ To import data into Power BI, go to `Get Data` menu and find the appropriate opt
 | Stores    | Dimension | Azure Blob Storage           |
  
  
-## 4. Data Cleaning: Transforming Data in Power Query Editor
+## 5. Data Cleaning: Transforming Data in Power Query Editor
 After importing all tables to Power BI, I performed some transformations in the Power Query Editor, to clean the data, fix column naming, data types and transform some columns into a more usable format. 
 
 Throughout this process, it is important to make sure that all tables have consistent and comprehensive naming, and that their format matched the convention: for example, column names should be written as "Full Name" instead of "full_name" or "full-name". 
@@ -88,33 +107,65 @@ Values in the original Weight column were either in kg, g or mL. Those in mL wer
 ### Customers table: Transformations
 The main transformation performed on this table was combining the columns `First Name` and `Last name` into a new column called `Full name`. This can be done by selecting both columns of interest and going to `Add Column` > `Merge Columns`.
 
-## 5. Creating the Data Model
-hhhh
+## 6. Creating the Data Model
+### Unlocking time Intellingence: Dates table
+To create a data model that takes advantage of all Power BI time intellingence functions, we need to first create a continuos `Dates` table, spanning the full time period of our data. To do this, I created a date table running from the start of the year containing the earliest date in the `Orders['Order Date']` column to the end of the year containing the latest date in the `Orders['Shipping Date']` column. These table contains the following columns, added using DAX formulas:
+- Day of Week
+- Month Number (i.e. Jan = 1, Dec = 12 etc.)
+- Month Name
+- Quarter
+- Year
+- Start of Year
+- Start of Quarter
+- Start of Month
+- Start of Week
+
+Finally, we need to create a **data hierarchy** inside the dates table. This will allow the user to drill down into our data and perform granular analysis within the report. The hierarchy should be: `Start of Year`>`Start of Quarter`>`Start of Month`>`Start of Week`>`Date`.
+
+### Establishing table-table relationships: STAR Schema Data Model
+In `Model View`, we can establish all active an inactive relationships between our tables, that will allow Power BI to perform calculations across all tables. The relationshps in our report are:
+- `Orders[Product Code]` to `Products[Product Code]`
+- `Orders[Store Code]` to `Stores[Store Code]`
+- `Orders[User ID]` to `Customers[User UUID]`
+- `Orders[Order Date]` to `Dates[Date]` (active)
+- `Orders[Shipping Date]` to `Date[Date]` (inactive)
+
+They are all one-to-many relationships with a single filter direction:  
 
 ![alt text](/readme-images/data_model.png)
 
+### Geography Hierarchy
+To allow our report to filter data by region, country and province/state, we created a geography hierarchy with the following levels:
+`World Region` > `Country` > `Country Region`.
+To do this, I had to first set up the following columns:
+- New calculated column `Country` in the **Stores** table that creates a full country name for each row, based on the Stores[Country Code] column:
+- New calculated column `Full region` in the **Stores** table, containing the values on the `Stores[Country Region]`, and `Store[Country]` columns, separated by a comma and a space. 
 
-## 6. Power BI Report
+### Measures Table
+Before adding visualisations, we need to create a `Measures Table ` in the data view. This should contain one column and one row, and we should then hide this column. We can now proceed to add new measures, using DAX. These measures will be used by Power BI to set up visualisations by performing the right calculations of the data. Examples of these include `Total Profit`, `Profit YTD`, `Total Revenue`, `Total Orders`, and many more. Please refer to the .pbix file in the repository for more information.
+
+## 7. Power BI Report 
+### Planning and Setting Up the Report
+The first step is to create all report pages. Go to `Report View` and add four oages, as follows:
+- Executive Summary
+- Customer Detail
+- Product Detail
+- Stores Map
+
+### Page 1: Executive Summary Page
  
- 
-4.	Planning and Setting Up the Report
- 
- 
- 
-5.	Page 1: Executive Summary Page
- 
- 
+
  ![alt text](/readme-images/executive.png)
  
  
-1.	Page 2: Customer Detail Page
+### Page 2: Customer Detail Page
  
  
  ![alt text](/readme-images/customer.png)
  
  
  
-1.	Page 3: Product Detail Page
+### Page 3: Product Detail Page
  
  
  
@@ -125,27 +176,28 @@ hhhh
  
  
  
-1.	Page 4: Stores Map Page
+### Page 4: Stores Map Page
  
  
  ![alt text](/readme-images/stores_map.png)
  
  
-a.	Creating a Drillthrough Page
+***Creating a Stores Drillthrough Page***
  
  ![alt text](/readme-images/drillthrough.png)
  
  
-a.	Creating a tooltip page
+***Creating a Stores Tooltip Page***
  
  
  
  ![alt text](/readme-images/tooltip.png)
  
  
- 
- 
-1.	Fixing Cross-filtering and Navigation
- 
-1.	SQL Metrics for Users Outside the Company
+### Fixing Cross-filtering and Navigation
+
+
+## 8. SQL Metrics for Users Outside the Company
+
+
 

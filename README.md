@@ -46,9 +46,10 @@ The first phase focuses on data loading and preparation.
  
  
 ## 5. Creating the Data Model
+hhhh
 
+![alt text](/readme-images/data_model.png)
 
-[]
 
 ## 6. Power BI Report
  
@@ -60,13 +61,13 @@ The first phase focuses on data loading and preparation.
 5.	Page 1: Executive Summary Page
  
  
- 
+ ![alt text](/readme-images/executive.png)
  
  
 1.	Page 2: Customer Detail Page
  
  
- 
+ ![alt text](/readme-images/customer.png)
  
  
  
@@ -74,7 +75,7 @@ The first phase focuses on data loading and preparation.
  
  
  
- 
+ ![alt text](/readme-images/product.png)
  
  
  
@@ -84,19 +85,19 @@ The first phase focuses on data loading and preparation.
 1.	Page 4: Stores Map Page
  
  
- 
+ ![alt text](/readme-images/stores_map.png)
  
  
 a.	Creating a Drillthrough Page
  
- 
+ ![alt text](/readme-images/drillthrough.png)
  
  
 a.	Creating a tooltip page
  
  
  
- 
+ ![alt text](/readme-images/tooltip.png)
  
  
  

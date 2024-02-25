@@ -1,8 +1,13 @@
-# Online Shopping Report: Evaluating Sales Performance in a Multinational Retail Company
-## Stack: Power BI and PostgreSQL
+# E-Commerce Report: Evaluating Sales Performance in a Multinational Retail Company
+
+[![Open in Visual Studio Code](https://img.shields.io/badge/Open%20in-Visual_Studio_Code-5C2D91?style=flat&logo=visual%20studio&logoColor=white)](https://open.vscode.dev/selvatica-36/Exploratory-data-analysis---Online-shopping-in-retail) ![GitHub commit activity](https://img.shields.io/github/commit-activity/y/selvatica-36/Exploratory-data-analysis---Online-shopping-in-retail)  ![GitHub last commit](https://img.shields.io/github/last-commit/selvatica-36/Exploratory-data-analysis---Online-shopping-in-retail)  ![issues](https://img.shields.io/github/issues/selvatica-36/Exploratory-data-analysis---Online-shopping-in-retail.svg) 
+
+## Stack
+![Power bi](https://img.shields.io/badge/power_BI-FF9900?style=for-the-badge&logo=powerbi&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/postgresql-3776AB?style=for-the-badge&logo=postgresql&logoColor=white) ![Git](https://img.shields.io/badge/Git-B1361E?style=for-the-badge&logo=git&logoColor=white) ![VSCode](https://img.shields.io/badge/VSCode-2962FF?style=for-the-badge&logo=visual%20studio&logoColor=white) ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white) 
+
 
 ### Summary
-**Welcome!** Join me on a learning journey in **Power BI** and **SQL**, to create an industry-standard, interactive and comprehensive report.  We will be working on a realistic online retail dataset, and extracting valuable insights to inform business decisions.
+**Welcome!** Join me on a learning journey in **Power BI** and **SQL**, to create an industry-standard, interactive and comprehensive report.  We will be working on an industry online retail dataset, and extracting valuable insights to inform business decisions.
  
 In the first part of the project, we will focus on data cleaning, creation of a STAR-based data model and subsequent development of the Power BI report. However, not all clients will have access to Power tools like Power BI desktop or Service. We want to ensure that data insights can still be extracted and shared with a broader audience. For this reason, the second objective focuses on creating SQL queries to extract and disseminate key data in a different way. These queries will answer common questions that clients might have.
  
@@ -11,7 +16,7 @@ This documentation will also include a detailed guide into Power BI data modelli
 ### Project Preview
 This interactive and comprehensive Power BI report contains four pages, including an Executive Summary, a Customer Detail Page, a Product Detail Page and a Stores Map.
 
-![alt text](/readme-images/preview.png)
+
  
 ## Table of Contents
 1. [Setting Up](#1-setting-up)
@@ -68,11 +73,16 @@ To import data into Power BI, go to `Get Data` menu and find the appropriate opt
 | Products  | Dimension | Local .csv file              |
 | Stores    | Dimension | Azure Blob Storage           |
  
+ ![alt text](/readme-images/get_azure_data_final.png)
+ ![alt text](/readme-images/get_folder_data.png)
  
 ## 5. Data Cleaning: Transforming Data in Power Query Editor
 After importing all tables to Power BI, I performed some transformations in the Power Query Editor, to clean the data, fix column naming, data types and transform some columns into a more usable format. 
 
 Throughout this process, it is important to make sure that all tables have consistent and comprehensive naming, and that their format matched the convention: for example, column names should be written as "Full Name" instead of "full_name" or "full-name". 
+
+![alt text](/readme-images/power_query_home_pane.PNG)
+
 
 ### Orders table: Transformations
 
@@ -83,7 +93,15 @@ Throughout this process, it is important to make sure that all tables have consi
 | Split datetime column  | Order date | Split into a date column and a time column             |
 | Split datetime column   | Shipping date | Split into a date column and a time column           |
 
+
+
+![alt text](/readme-images/power_query_remove_rows_with_nulls.png)
 - To split datetime columns, go to `Split Column` > `by delimiter`, and chose a blank space as the delimiter. Alternatively, duplicate the column, and choose the format as 'date' or 'time' in the data type option.
+![alt text](/readme-images/power_query_split_col_by_delimiter.png)
+![alt text](/readme-images/ordeR_ship_date.PNG)
+
+![alt text](/readme-images/power_query_change_dtype.png)
+
 
 ### Products table: Transformations
 
@@ -96,15 +114,18 @@ Throughout this process, it is important to make sure that all tables have consi
 | Calculated column | New column name: Weight Kilograms                            | Calculated from *Weight Values* and *Weight Units* columns, to transform all values to kg           | DAX (see below)            |
 | Delete columns    | weight values / weight units | No longer needed           | Delete           |
 
+![alt text](/readme-images/power_query_col_from_examples.PNG)
 
 *This was done outside Power Query Editor, using DAX in `Data View` > `New Calculated Column`. The DAX formula used for this transformation is: 
 ```
 Weight Kilograms = IF([Weight Units]="kg", [Clean Weight Values], [Clean Weight Values]/1000)
 ```
 Values in the original Weight column were either in kg, g or mL. Those in mL were approximated to g using the density of water (1 g = 1 mL). 
+![alt text](/readme-images/weight_column.PNG)
 
 ### Customers table: Transformations
 The main transformation performed on this table was combining the columns `First Name` and `Last name` into a new column called `Full name`. This can be done by selecting both columns of interest and going to `Add Column` > `Merge Columns`.
+![alt text](/readme-images/power_query_merge_columns.PNG)
 
 ## 6. Creating the Data Model
 ### Unlocking time Intellingence: Dates table
@@ -120,6 +141,10 @@ To create a data model that takes advantage of all Power BI time intellingence f
 - Start of Week
 
 Finally, we need to create a **data hierarchy** inside the dates table. This will allow the user to drill down into our data and perform granular analysis within the report. The hierarchy should be: `Start of Year`>`Start of Quarter`>`Start of Month`>`Start of Week`>`Date`.
+
+![alt text](/readme-images/create_hierarchy_right_click.png)
+![alt text](/readme-images/date_table.PNG)
+![alt text](/readme-images/Dates%20table.PNG)
 
 ### Establishing table-table relationships: STAR Schema Data Model
 In `Model View`, we can establish all active an inactive relationships between our tables, that will allow Power BI to perform calculations across all tables. The relationshps in our report are:
@@ -143,6 +168,8 @@ To do this, I had to first set up the following columns:
 ### Measures Table
 Before adding visualisations, we need to create a `Measures Table ` in the data view. This should contain one column and one row, and we should then hide this column. We can now proceed to add new measures, using DAX. These measures will be used by Power BI to set up visualisations by performing the right calculations of the data. Examples of these include `Total Profit`, `Profit YTD`, `Total Revenue`, `Total Orders`, and many more. Please refer to the .pbix file in the repository for more informations, including DAX formulas.
 
+![alt text](/readme-images/measures_table.PNG)
+
 ## 7. Power BI Report 
 ### Planning and Setting Up the Report
 The first step is to create all report pages. Go to `Report View` and add four pages, as follows:
@@ -153,25 +180,30 @@ The first step is to create all report pages. Go to `Report View` and add four p
 
 ### Page 1: Executive Summary Page
 
- ![alt text](/readme-images/executive.png)
+ ![alt text](/readme-images/executive_final.png)
  
  
 ### Page 2: Customer Detail Page
  
- ![alt text](/readme-images/customer.png)
+ ![alt text](/readme-images/customer_final.png)
  
 ### Page 3: Product Detail Page
  
- ![alt text](/readme-images/product.png)
+ ![alt text](/readme-images/product_final.png)
 
 Upon clicking on the top left Filter button, a slicer opens, letting up choose product category and country:
 
- ![alt text](/readme-images/product_slicer.png)
+ ![alt text](/readme-images/product_slicer_1.png)
+ ![alt text](/readme-images/product_slicer_2.png)
+ ![alt text](/readme-images/product_slicer_3.png)
+ ![alt text](/readme-images/slice_bar_settings.PNG)
 
   
 ### Page 4: Stores Map Page
  
- ![alt text](/readme-images/stores_map.png)
+ ![alt text](/readme-images/stores_map_final.png)
+ ![alt text](/readme-images/capt_map_tooltip.png)
+ ![alt text](/readme-images/map_settings.PNG)
  
 ***Creating a Stores Drillthrough Page***
 
@@ -179,15 +211,16 @@ To make it easy for the region managers to check on the progress of a given stor
 
 This drilltrhough page should be created as a new page in the report, and designed as drilltrough page. 
  
- ![alt text](/readme-images/drillthrough.png)
- 
+![alt text](/readme-images/drilltrhough_final.png)
+![alt text](/readme-images/drilltrhough_settings.PNG)
+![alt text](/readme-images/map_drilltrhough.png)
  
 ***Creating a Stores Tooltip Page***
  
  To allow users to be able to see each store's year-to-date profit performance against the profit target just by hovering the mouse over a store on the map.
 
- ![alt text](/readme-images/tooltip.png)
- 
+ ![alt text](/readme-images/tooltip_final.png)
+
  
 ### Fixing Cross-filtering and Navigation
 

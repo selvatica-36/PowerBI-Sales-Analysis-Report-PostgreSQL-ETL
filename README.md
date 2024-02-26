@@ -9,9 +9,9 @@
 ### Summary
 **Welcome!** Join me on a learning journey in **Power BI** and **PostgreSQL**, to create an industry-standard, interactive and comprehensive report.  We will be working on an online retail dataset (120,000 records) from an anonymised multinational retail company. We will also and extracting valuable insights to inform business decisions.
  
-📌  **The first part of the project focuses on data extraction, cleaning and modelling.** We will perform **ETL** on the data: 1) extract data (E) from four different cloud and local sources; 2) transform (T) the data in Power Query, and 3) load the data back to Power BI. Finally, we will create our STAR-based data model.
+📌  **The first part of the project focuses on data extraction, cleaning and modelling.** We will perform **ETL** on the data: 1) extract data (E) from four different cloud and local sources; 2) transform (T) the data in Power Query, and 3) load the data back to Power BI. Finally, we will create our STAR-based data model, including a dates table and relevant hierarchies.
 
-📊 **The second part consists on the development of an interactive multi-page Power BI report.** First, we will generate a dates table, a table of key measures and relevant hierarchies.  We will then build interactive-multi-page report containing 35 visualisations, from KPIs to predictive modelling.
+📊 **The second part consists on the development of an interactive multi-page Power BI report.** First, we will a table of key measures in **DAX**. We will then build interactive-multi-page report containing 35 visualisations, from KPIs to predictive modelling.
 
 💻 **The third objective focuses on creating custom SQL queries to generate powerful insights** outside the Power BI environment. Why do we want to do this? Not all clients will have access to Power tools like Power BI desktop or Service. We want to ensure that data insights can still be extracted and shared with a broader audience. 
  
@@ -153,21 +153,31 @@ The main transformation performed on this table was combining the columns `First
 
 ## 5. Creating the Data Model
 ### Unlocking time Intellingence: `Dates` table
-To create a data model that takes advantage of all Power BI time intellingence functions, we need to first create a continuos `Dates` table, spanning the full time period of our data. To do this, I created a date table running from the start of the year containing the earliest date in the `Orders['Order Date']` column to the end of the year containing the latest date in the `Orders['Shipping Date']` column. These table contains the following columns, added using DAX formulas:
-- Day of Week
-- Month Number (i.e. Jan = 1, Dec = 12 etc.)
-- Month Name
-- Quarter
-- Year
-- Start of Year
-- Start of Quarter
-- Start of Month
-- Start of Week
+To create a data model that takes advantage of all Power BI time intellingence functions, we need to first create a continuos `Dates` table, spanning the full time period of our data. To do this, I created a date table running from the start of the year containing the earliest date in the `Orders['Order Date']` column to the end of the year containing the latest date in the `Orders['Shipping Date']` column. These table contains the following columns, added in `Data View` > `New Calculated Column`, using DAX formulas:
+
+|      Calculated Column      |                                  DAX measure                                  |
+|:---------------------------:|:-----------------------------------------------------------------------------:|
+|            Dates            | `CALENDAR(MIN('Orders'[Order Date]), MAX ('Orders'[Shipping Date]))` |
+|         Day of Week         |                         `FORMAT([Date], "dddd" )`                        |
+| Month Number (i.e. Jan = 1) |                            `MONTH(Dates[Date])`                            |
+|          Month Name         |                            `Dates[Date].[Month]`                            |
+|           Quarter           |                           `QUARTER(Dates[Date])`                           |
+|             Year            |                              `YEAR(Dates[Date])`                              |
+|        Start of Year        |                           `STARTOFYEAR(Dates[Date])`                          |
+|       Start of Quarter      |                        `STARTOFQUARTER(Dates[Date])`                       |
+|        Start of Month       |                          `STARTOFMONTH(Dates[Date])`                          |
+|        Start of Week        |                   `Dates[Date] - WEEKDAY(Dates[Date],2) + 1`                  |
+
+The `Dates` table should look like the one below.
+![alt text](/images-readme/date_table.png)
 
 Finally, we need to create a **date hierarchy** inside the dates table. This will allow the user to drill down into our data and perform granular analysis within the report. The hierarchy should be: `Start of Year`>`Start of Quarter`>`Start of Month`>`Start of Week`>`Date`.
+To add hierarchy, right clonk on the table of interest > select 'Create hierarchy' from dropdown menu. To add column to the hierarchy, right click on each column > select 'Add to hierarchy'. 
 
 ![alt text](/images-readme/create_hierarchy_right_click.png)
-![alt text](/images-readme/date_table.png)
+
+The dates hierarchy should look as follows:
+
 ![alt text](/images-readme/Dates%20table.png)
 
 ### Establishing table-table relationships: STAR Schema Data Model
@@ -186,13 +196,23 @@ They are all one-to-many relationships with a single filter direction:
 To allow our report to filter data by region, country and province/state, we created a geography hierarchy with the following levels:
 `World Region` > `Country` > `Country Region`.
 To do this, I had to first set up the following columns:
-- New calculated column `Country` in the **Stores** table that creates a full country name for each row, based on the Stores[Country Code] column:
+- New calculated column `Country` in the **Stores** table that creates a full country name for each row, based on the Stores[Country Code] column.
+
 - New calculated column `Full region` in the **Stores** table, containing the values on the `Stores[Country Region]`, and `Store[Country]` columns, separated by a comma and a space. 
 
 ### Measures Table
-Before adding visualisations, we need to create a `Measures Table ` in the data view. This should contain one column and one row, and we should then hide this column. We can now proceed to add new measures, using DAX. These measures will be used by Power BI to set up visualisations by performing the right calculations of the data. Examples of these include `Total Profit`, `Profit YTD`, `Total Revenue`, `Total Orders`, and many more. Please refer to the .pbix file in the repository for more informations, including DAX formulas.
+Before adding visualisations, we need to create a `Measures Table ` in the data view.
+ 1. Create a new table. This table should initially  contain one column and one row; this column should be hidden. 
+ ![alt text](/images-readme/measures_table.png)
+2. **Add DAX measures.** These measures will be used by Power BI to set up visualisations by performing the right calculations of the data. Examples of these include `Total Profit`, `Profit YTD`, `Total Revenue`, `Total Orders`, and many more.  We used a **31 measures in total** - some are shown in the table below. Please refer to the .pbix file in the repository for more information, including complete DAX formulas.
 
-![alt text](/images-readme/measures_table.png)
+| Key Measure Name    | DAX formula                                                                                                                                  |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| Total Profit        | `SUMX( Orders , ( RELATED ( Products[Sale Price] ) -   RELATED ( Products[Cost Price] ))* Orders[Product Quantity] )`                        |
+| Profit YTD          | `CALCULATE (SUMX(Orders, (RELATED(Products[Sale Price]) - RELATED(Products[Cost Price]))*Orders[Product Quantity]),DATESYTD(Dates[Date]))`   |
+| Profit Goal         | `Profit Goal =  VAR PreviousYearProfitYTD = CALCULATE([Profit YTD], SAMEPERIODLASTYEAR('Dates'[Date]))  RETURN  PreviousYearProfitYTD * 1.2` |
+| Top Product Revenue | `CALCULATE (VALUES(Products[Description]), TOPN(1, Products, [Total Revenue], DESC))`                                                        |
+| Total Revenue       | `SUMX(Orders, Orders[Product Quantity]*RELATED(Products[Sale Price]))`                                                                       |
 
 ## 6. Power BI Report 
 ### Planning and Setting Up the Report

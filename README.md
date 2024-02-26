@@ -7,9 +7,13 @@
 
 
 ### Summary
-**Welcome!** Join me on a learning journey in **Power BI** and **SQL**, to create an industry-standard, interactive and comprehensive report.  We will be working on an industry online retail dataset, and extracting valuable insights to inform business decisions.
+**Welcome!** Join me on a learning journey in **Power BI** and **PostgreSQL**, to create an industry-standard, interactive and comprehensive report.  We will be working on an online retail dataset (120,000 records) from an anonymised multinational retail company. We will also and extracting valuable insights to inform business decisions.
  
-In the first part of the project, we will focus on data cleaning, creation of a STAR-based data model and subsequent development of the Power BI report. However, not all clients will have access to Power tools like Power BI desktop or Service. We want to ensure that data insights can still be extracted and shared with a broader audience. For this reason, the second objective focuses on creating SQL queries to extract and disseminate key data in a different way. These queries will answer common questions that clients might have.
+📌  **The first part of the project focuses on data extraction, cleaning and modelling.** We will perform **ETL** on the data: 1) extract data (E) from four different cloud and local sources; 2) transform (T) the data in Power Query, and 3) load the data back to Power BI. Finally, we will create our STAR-based data model.
+
+📊 **The second part consists on the development of an interactive multi-page Power BI report.** First, we will generate a dates table, a table of key measures and relevant hierarchies.  We will then build interactive-multi-page report containing 35 visualisations, from KPIs to predictive modelling.
+
+💻 **The third objective focuses on creating custom SQL queries to generate powerful insights** outside the Power BI environment. Why do we want to do this? Not all clients will have access to Power tools like Power BI desktop or Service. We want to ensure that data insights can still be extracted and shared with a broader audience. 
  
 This documentation will also include a detailed guide into Power BI data modelling and reporting. Let's dive in!
 
@@ -36,11 +40,14 @@ As it is only available in Windows machines, users of other operating systems wi
 
 Later in the project, we will be connecting remotely to a database stored in Azure's cloud platform. The user may want to download VSCode and the SQLTools extension for this purpose. 
 
-*Optional*: The user may want to install the psycopg2 library to automate sql queries with python (```pip install psycopg2```).
+*Optional*: The user may want to install the psycopg2 library to automate SQL queries with python:
+ ```
+ pip install psycopg2
+ ```
  
 ## 2. In this Repository
 These are the files you will find in this repository:
-- Main Power BI Report: `power-BI-online-retail-report.pbix`
+- Main Power BI Report: `power_BI_report.pbix`
 - **SQL-queries** folder, containing:
     - SQL file to check table and column names: `check_table_and_col_names.sql`
     - Python script to automate extraction of column names into csv files for all tables in the dataset, using psycopg2 library: `extract_col_names.py`
@@ -52,15 +59,24 @@ These are the files you will find in this repository:
 
 ## 3. Tables in our Dataset
  
-- The **Orders** table is the main fact table. It contains information about each order, including the order and shipping dates, the customer, store and product IDs for associating with dimension tables, and the amount of each product ordered. Each order in this table consists of an order of a single product type, so there is only one product code per order.
+- The `Orders` table is the main fact table. It contains information about each order, including the order and shipping dates, the customer, store and product IDs for associating with dimension tables, and the amount of each product ordered. Each order in this table consists of an order of a single product type, so there is only one product code per order.
  
-- The **Products** table contains information about each product sold by the company, including the product code, name, category, cost price, sale price, and weight.
+- The `Products` table contains information about each product sold by the company, including the product code, name, category, cost price, sale price, and weight.
  
-- The **Stores** table contains information about each store, including the store code, store type, country, region, and address.
+- The `Stores` table contains information about each store, including the store code, store type, country, region, and address.
  
-- The **Customers** table contains names and personal details of all customers. 
+- The `Customers` table contains names and personal details of all customers. 
  
-## 4. Importing Data into Power BI
+## 4. Extract-Transform-Load (ETL) in Power BI
+The first step is to consolidate all the data into a single Power BI (.pbix) file. Currently, the data needs ot be extracted from four different sources (*see 4.1*), cleaned (*see 4.2*) and loaded. 
+
+The diagram below gives a quick overview of the ETL pipeline, as well as the types of transformations performed on the data.
+
+![alt text](/images-readme/ETL_final.png)
+
+NOTE: *the credentials needed to access and/or download the data are not available in this repository.*
+
+### 4.1. Importing Data into Power BI
  
 The first phase focuses on data loading and preparation. Each table was uploaded from a different source. The tables downloaded from Azure required specific credentials provided by AiCore (unavailable in this repository). 
 
@@ -69,20 +85,22 @@ To import data into Power BI, go to `Get Data` menu and find the appropriate opt
 | **Table** | **Type**  | **Imported from**            |
 |-----------|-----------|------------------------------|
 | Orders    | Facts     | Azure SQL Database           |
-| Customers | Dimension | Combining 3 local .csv files |
+| Customers | Dimension | Combining 3 .csv files, stored in a local folder |
 | Products  | Dimension | Local .csv file              |
 | Stores    | Dimension | Azure Blob Storage           |
  
+The figure below shows how to import data from **Azure SQL Databse** and **Azure Blob Storage**.
  ![alt text](/images-readme/get_azure_data_final.png)
- ![alt text](/images-readme/get_folder_data.png)
+
+The figure below shows how to import data from a local **.csv** file or multiple files saved in a local **folder**.
+![alt text](/images-readme/get_folder_data.png)
  
-## 5. Data Cleaning: Transforming Data in Power Query Editor
-After importing all tables to Power BI, I performed some transformations in the Power Query Editor, to clean the data, fix column naming, data types and transform some columns into a more usable format. 
+### 4.2. Data Cleaning: Transforming Data in Power Query Editor
+After importing all tables to Power BI, we need to transform the data in the **Power Query Editor**. Common transformations to all tables include:
+- Fix column naming. Throughout this process, it is important to make sure that all tables have consistent and comprehensive naming, and that their format matched the convention: for example, column names should be written as "Full Name" instead of "full_name" or "full-name". 
+- Ensure data types are correct and accurate. 
 
-Throughout this process, it is important to make sure that all tables have consistent and comprehensive naming, and that their format matched the convention: for example, column names should be written as "Full Name" instead of "full_name" or "full-name". 
-
-![alt text](/images-readme/power_query_home_pane.png)
-
+The specific transformations performed on each table are specified in the ETL diagram above and in the sections below in more detail. 
 
 ### Orders table: Transformations
 
@@ -93,12 +111,11 @@ Throughout this process, it is important to make sure that all tables have consi
 | Split datetime column  | Order date | Split into a date column and a time column             |
 | Split datetime column   | Shipping date | Split into a date column and a time column           |
 
-
-
-![alt text](/images-readme/power_query_remove_rows_with_nulls.png)
 - To split datetime columns, go to `Split Column` > `by delimiter`, and chose a blank space as the delimiter. Alternatively, duplicate the column, and choose the format as 'date' or 'time' in the data type option.
+
 ![alt text](/images-readme/power_query_split_col_by_delimiter.png)
-![alt text](/images-readme/ordeR_ship_date.png)
+
+- To change data type, click on the icon to the left on the column name and select the desired data type.
 
 ![alt text](/images-readme/power_query_change_dtype.png)
 
@@ -108,27 +125,34 @@ Throughout this process, it is important to make sure that all tables have consi
 
 | **Action**        | **Column/Condition**         | **Reason** | **Method** |
 |-------------------|------------------------------|------------|------------|
-| Remove duplicates | Product code                              | Ensure each product code is unique           | n/a            |
+| Remove duplicates | Product code                              | Ensure each product code is unique           | See below            |
 | Split column      | weight (e.g. values: 10g)                             | Into weight values column and units column           | Column from Examples            |
 | Fix datatype      | weight values column                             | To decimal           | n/a            |
 | Calculated column | New column name: Weight Kilograms                            | Calculated from *Weight Values* and *Weight Units* columns, to transform all values to kg           | DAX (see below)            |
-| Delete columns    | weight values / weight units | No longer needed           | Delete           |
 
+
+- To remove duplicates, click on 'Remove Rows' > 'Remove Duplicates' in the Power Query Home pane:
+
+![alt text](/images-readme/power_query_remove_rows_with_nulls.png)
+
+- The `weight` column contains values in either in kg, g or mL. Those in mL will be approximated to g using the density of water (1 g = 1 mL). Before transforming, the data is in the format e.g. 800g, 400mL, 0.1kg. this involves multiple steps:
+    - 1. In Power Query, create 'Column from Examples' based on the weight column, containing only the numerical values. 
 ![alt text](/images-readme/power_query_col_from_examples.png)
-
-*This was done outside Power Query Editor, using DAX in `Data View` > `New Calculated Column`. The DAX formula used for this transformation is: 
-```
-Weight Kilograms = IF([Weight Units]="kg", [Clean Weight Values], [Clean Weight Values]/1000)
-```
-Values in the original Weight column were either in kg, g or mL. Those in mL were approximated to g using the density of water (1 g = 1 mL). 
+    - 2. In Power Query, create 'Column from Examples' based on the weight column, containing only the units as strings e.g. 'g'.
+    - 3. Load the data to Power BI (exit Power Query). 
+    - 4. Create final weight column, containing only weights in kg (as floats): to do this go to `Data View` > `New Calculated Column`. The DAX formula used for this transformation is: 
+        ```
+        Weight Kilograms = IF([Weight Units]="kg", [Clean Weight Values], [Clean Weight Values]/1000)
+        ``` 
+        The desired output should look like the column highlighted in the image below:
 ![alt text](/images-readme/weight_column.png)
 
 ### Customers table: Transformations
-The main transformation performed on this table was combining the columns `First Name` and `Last name` into a new column called `Full name`. This can be done by selecting both columns of interest and going to `Add Column` > `Merge Columns`.
+The main transformation performed on this table was combining the columns `First Name` and `Last name` into a new column called `Full name`. This can be done in **Power Query** by selecting both columns of interest and going to `Add Column` > `Merge Columns` in the *Transform* pane. 
 ![alt text](/images-readme/power_query_merge_columns.png)
 
-## 6. Creating the Data Model
-### Unlocking time Intellingence: Dates table
+## 5. Creating the Data Model
+### Unlocking time Intellingence: `Dates` table
 To create a data model that takes advantage of all Power BI time intellingence functions, we need to first create a continuos `Dates` table, spanning the full time period of our data. To do this, I created a date table running from the start of the year containing the earliest date in the `Orders['Order Date']` column to the end of the year containing the latest date in the `Orders['Shipping Date']` column. These table contains the following columns, added using DAX formulas:
 - Day of Week
 - Month Number (i.e. Jan = 1, Dec = 12 etc.)
@@ -140,7 +164,7 @@ To create a data model that takes advantage of all Power BI time intellingence f
 - Start of Month
 - Start of Week
 
-Finally, we need to create a **data hierarchy** inside the dates table. This will allow the user to drill down into our data and perform granular analysis within the report. The hierarchy should be: `Start of Year`>`Start of Quarter`>`Start of Month`>`Start of Week`>`Date`.
+Finally, we need to create a **date hierarchy** inside the dates table. This will allow the user to drill down into our data and perform granular analysis within the report. The hierarchy should be: `Start of Year`>`Start of Quarter`>`Start of Month`>`Start of Week`>`Date`.
 
 ![alt text](/images-readme/create_hierarchy_right_click.png)
 ![alt text](/images-readme/date_table.png)
@@ -170,7 +194,7 @@ Before adding visualisations, we need to create a `Measures Table ` in the data 
 
 ![alt text](/images-readme/measures_table.png)
 
-## 7. Power BI Report 
+## 6. Power BI Report 
 ### Planning and Setting Up the Report
 The first step is to create all report pages. Go to `Report View` and add four pages, as follows:
 - Executive Summary
@@ -246,7 +270,7 @@ From the Edit Interactions view in the Format tab of the ribbon, we can modify f
 
 A navigation bar was set up on the left side of each page, to allow navigation between pages of the report. To allow this functionality, we need to `Add Button` and turn `Action` to ON, select `Navigation` and the desired report page for each button. 
 
-## 8. SQL Metrics for Users Outside the Company
+## 7. SQL Metrics for Users Outside the Company
 It is very common to encounter clients who don't have access to specialised visualisation tools like Power BI. Here, I use SQL queries as an additional tool of my data analysis toolkit. 
 
 ### Step 1: Connect to remote SQL database

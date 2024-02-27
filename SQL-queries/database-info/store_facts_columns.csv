@@ -1,5 +1,0 @@
-Column Name,Data Type
-Total Revenue,double precision
-Total Revenue / Out Of Total Revenue Across Rows,double precision
-Orders,bigint
-Store Type,text

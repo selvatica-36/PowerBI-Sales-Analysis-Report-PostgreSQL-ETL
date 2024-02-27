@@ -1,5 +1,0 @@
-Column Name,Data Type
-total_sales,numeric
-count_of_orders,bigint
-percentage_of_total_sales,numeric
-store_type,text

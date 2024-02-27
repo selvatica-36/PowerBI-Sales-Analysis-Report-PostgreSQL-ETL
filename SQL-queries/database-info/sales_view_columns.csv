@@ -1,5 +1,0 @@
-Column Name,Data Type
-percentage_of_sales,bigint
-sale_price,double precision
-cost_price,double precision
-product_quantity,bigint

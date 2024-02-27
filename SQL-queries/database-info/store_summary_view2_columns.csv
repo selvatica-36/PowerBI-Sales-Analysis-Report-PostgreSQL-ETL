@@ -1,5 +1,0 @@
-Column Name,Data Type
-total_sales,double precision
-order_count,bigint
-percentage_of_total_sales,double precision
-store_type,text

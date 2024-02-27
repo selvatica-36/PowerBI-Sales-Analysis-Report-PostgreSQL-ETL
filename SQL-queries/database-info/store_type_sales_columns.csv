@@ -1,5 +1,0 @@
-Column Name,Data Type
-Total Sales,numeric
-% of Total Sales,numeric
-Number of Orders,bigint
-Store Type,text

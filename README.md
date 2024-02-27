@@ -41,7 +41,7 @@ This interactive and comprehensive Power BI report contains four pages, includin
     6.3. [Product Detail Page](#63-product-detail-page)
 
     6.4. [Stores Map Page](#64-stores-map-page)
-    
+
     6.5. [Fixing Crossfiltering and Navigation](#65-fixing-cross-filtering-and-navigation)
 7. [SQL Metrics for Users Outside the Company](#7-sql-metrics-for-users-outside-the-company)
 
@@ -341,6 +341,7 @@ Contains a **map visual** with all store locations, as well as a country slicer 
 To add the map visual, set the following values:
 - Location: Geography hierarchy
 - Bubble size: `Profit YTD` measure.
+
 ![alt text](/images-readme/map_settings.png)
 
 ***Creating a Stores Tooltip Page***
@@ -407,9 +408,13 @@ As there were many tables in the dataset, I decided to automate the column list 
 All queries and answers are stored in SQL-queries/client-queries folder, in this repository.
 The questions we have answered here are:
  - ***Question 1***: How many staff are there in all of the UK stores? 
+
  - ***Question 2***: Which month in 2022 has had the highest revenue?
+
  - ***Question 3***: Which German store type had the highest revenue for 2022? 
+
  - ***Question 4***: Create a view where the rows are the store types and the columns are the total sales, percentage of total sales and the count of orders. 
+ 
  - ***Question 5***: Which product category generated the most profit for the "Wiltshire, UK" region in 2021?
 
 

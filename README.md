@@ -26,11 +26,24 @@ This interactive and comprehensive Power BI report contains four pages, includin
 1. [Setting Up](#1-setting-up)
 2. [In this Repository](#2-in-this-repository)
 3. [Tables in our Dataset](#3-tables-in-our-dataset)
-4. [Importing Data into Power BI](#4-importing-data-into-power-bi)
-5. [Data Cleaning: Transforming Data in Power Query Editor](#5-data-cleaning-transforming-data-in-power-query-editor)
-6. [Creating the Data Model](#6-creating-the-data-model)
-7. [Power BI Report](#7-power-bi-report)
-8. [SQL Metrics for Users Outside the Company](#8-sql-metrics-for-users-outside-the-company)
+4. [Extract-Transform-Load (ETL) in Power BI](#4-extract-transform-load-etl-in-power-bi)
+
+    4.1. [Importing Data into Power BI](#41-importing-data-into-power-bi)
+
+    4.2. [Data Cleaning: Transforming Data in Power Query Editor](#42-data-cleaning-transforming-data-in-power-query-editor)
+5. [Creating the Data Model](#5-creating-the-data-model)
+6. [Power BI Report](#6-power-bi-report)
+
+    6.1. [Executive Summary Page](#61-executive-summary-page)
+
+    6.2. [Customer Detail Page](#62-customer-detail-page)
+
+    6.3. [Product Detail Page](#63-product-detail-page)
+
+    6.4. [Stores Map Page](#64-stores-map-page)
+    
+    6.5. [Fixing Crossfiltering and Navigation](#65-fixing-cross-filtering-and-navigation)
+7. [SQL Metrics for Users Outside the Company](#7-sql-metrics-for-users-outside-the-company)
 
 ## 1. Setting Up
  
@@ -201,7 +214,7 @@ To do this, I had to first set up the following columns:
 - New calculated column `Full region` in the **Stores** table, containing the values on the `Stores[Country Region]`, and `Store[Country]` columns, separated by a comma and a space. 
 
 ### Measures Table
-Before adding visualisations, we need to create a `Measures Table ` in the data view.
+We need to create DAX measures to use in our visualisations. To do this, we need to create a `Measures Table ` in the data view:
  1. Create a new table. This table should initially  contain one column and one row; this column should be hidden. 
  ![alt text](/images-readme/measures_table.png)
 2. **Add DAX measures.** These measures will be used by Power BI to set up visualisations by performing the right calculations of the data. Examples of these include `Total Profit`, `Profit YTD`, `Total Revenue`, `Total Orders`, and many more.  We used a **31 measures in total** - some are shown in the table below. Please refer to the .pbix file in the repository for more information, including complete DAX formulas.
@@ -222,51 +235,138 @@ The first step is to create all report pages. Go to `Report View` and add four p
 - Product Detail
 - Stores Map
 
-### Page 1: Executive Summary Page
+### 6.1. Executive Summary Page
 
- ![alt text](/images-readme/executive_final.png)
- 
- 
-### Page 2: Customer Detail Page
+![alt text](/images-readme/executive_final.png)
+
+The executive summary contains:
+- **Card visuals** for `Total Revenue`, `Total Orders` and `Total Profit`.
+- **Line chart** to show the revenue over time and the predicted revenue in the coming cycles.  
+    - **Drill-down**: Set X axis to your Date Hierarchy, with only the `Start of Year`, `Start of Quarter` and `Start of Month` levels displayed.
+    - Set Y-axis to `Total Revenue`.
+    - **Predictive modelling**: Add a trend line, and a forecast for the next 10 periods with a 95% confidence interval.
+- **KPI** charts for quarterlyy revenue, profit and orders:
+    - The **Value** field should be `Total Revenue/Profit/Orders`
+    - The **Trend Axis** should be `Start of Quarter`
+    - The **Target** should be `Target Revenue/Profit/Orders`.
+    - In the Format pane, set the Trend Axis to On, expand the associated tab, and set the values as follows: Direction -> High is Good | Bad Colour -> red | Transparency -> 15%.
+- **Donut** charts to show the breakdown of revenue both by country and by store type.
+    - X-axis: `Total Revenue` measure.
+    - Filter with `Store[Country]` column or `Store[Store Type]` column.
+- **Clustered bar chart** to show the number of orders by product category.
+    - X-axis: `Total Orders` measure.
+    - Filter with `Products[Category]` column.
+
+### 6.2. Customer Detail Page
  
  ![alt text](/images-readme/customer_final.png)
  
-### Page 3: Product Detail Page
+ The customer detail page contains:
+ - Headline **card visuals**:
+    - Unique customers card: measure `Total Customers`.
+    - Revenue per customer card: measure `Revenue per Customer`.
+- **Donut** charts to show the breakdown of total customers by country.
+    - X-axis: `Total Customers` measure.
+    - Filter with `Users[Country]` column.
+ - **Column chart** to show the number of customers by product category.
+    - X-axis: `Total Customers` measure.
+    - Filter with `Products[Category]` column.
+- **Line chart** to show the customer trending over time and the predicted customer numbers in the coming cycles.  
+    - **Drill-down**: Set X axis to your Date Hierarchy, with only the `Start of Year`, `Start of Quarter` and `Start of Month` levels displayed.
+    - Set Y-axis to `Total Customers`.
+    - **Predictive modelling**: Add a trend line, and a forecast for the next 10 periods with a 95% confidence interval.
+- **Top 20 Customers table**. Built using measures `Total Revenue` and `Total Orders` filtered by `Customer[Full Name]` column. 
+- **Top Customer card visuals**:
+    - Top Customer card: `Top Customer Name` measure.
+    - Revenue card: `Total Revenue by Top Customer` measure.
+    - Order card: `Orders By Top Customer` measure.
+- **Date slicer**. Add slicer > style: 'between'. Select `Dates[Year]`.
+
+### 6.3. Product Detail Page
  
  ![alt text](/images-readme/product_final.png)
 
-Upon clicking on the top left Filter button, a slicer opens, letting up choose product category and country:
+The customer detail page contains:
+ - **Filter state cards**:
+    - First define the following measures:
+    ```
+    Category Selection = IF(ISFILTERED(Products[Category]), SELECTEDVALUE(Products[Category]), "No Selection"),"No Selection")
 
- ![alt text](/images-readme/product_slicer_1.png)
+    Country Selection = IF(ISFILTERED(Stores[Country]), SELECTEDVALUE(Stores[Country]), "No Selection"),"No Selection") 
+    ```
+    - Add each measure to a filter card visual. These measures will work in tandem with the slicer toolbar we will build below.
+- **Gauge visuals**. Should show the current-quarter performance of Orders, Revenue and Profit against a quarterly target (10% quarter-on-quarter growth).
+    - As the value, assign the measures `QTD Revenue/Orders/Profit` (QTD = quarter to date), respectively.
+    - Set the target measures as the maximum value of the guage.
+ - **Area chart** of revenue by product category.
+    - X axis should be `Dates[Start of Quarter]`.
+    - Y axis values should be `Total Revenue` measure.
+    - Legend should be `Products[Category]`.
+- **Scatter graph**. *Which product ranges are both top-selling items and also profitable?*
+    - Create a new calculated column called `[Profit per Item]` in the `Products` table.
+    - Values: `Products[Description]`
+    - X-Axis: `Products[Profit per Item]`
+    - Y-Axis: `Orders[Total Quantity]`
+    - Legend: `Products[Category]`
+- **Top Products table**. Built in the same way as the table from the customer Detail page.
+- **Top Product card visuals**:
+    - Top Customer card: `Top Customer Name` measure.
+    - Revenue card: `Total Revenue by Top Customer` measure.
+    - Order card: `Orders By Top Customer` measure.
+
+#### Slicer Toolbar: Filtering by Category and Country
+We want to create a pop-out toolbar to filter our Poduct Detail page by product category and country. Upon clicking on the top left Filter button, a slicer opens, letting up choose product category and country:
+
+![alt text](/images-readme/product_slicer_3.png)
+
+To create it, we need to follow these steps:
+1. Adds filter button to the top of the navigation bar, with the following settings:
  ![alt text](/images-readme/product_slicer_2.png)
- ![alt text](/images-readme/product_slicer_3.png)
- ![alt text](/images-readme/slice_bar_settings.png)
 
-  
-### Page 4: Stores Map Page
- 
+2. Draw a new rectangle shape and **add  vertical list slicers**:
+    - One set to `Products[Category]`.
+    - The second set to `Stores[Country]`.
+3. Add a back button to the slicer panel (select 'Back' button type).
+4. Open the Bookmarks pane and add two new bookmarks: one with the toolbar group hidden in the Selection pane, and one with it visible. Name them Slicer Bar Closed and Slicer Bar Open. 
+    ![alt text](/images-readme/product_slicer_1.png)
+
+    ![alt text](/images-readme/product_slicer_3.png)
+Right-click each bookmark in turn, and ensure that Data is unchecked.
+    ![alt text](/images-readme/slice_bar_settings.png)
+
+### 6.4. Stores Map Page
+Contains a **map visual** with all store locations, as well as a country slicer that allows the user to zoom in to a specific country in the map.
  ![alt text](/images-readme/stores_map_final.png)
- ![alt text](/images-readme/capt_map_tooltip.png)
- ![alt text](/images-readme/map_settings.png)
+
+To add the map visual, set the following values:
+- Location: Geography hierarchy
+- Bubble size: `Profit YTD` measure.
+![alt text](/images-readme/map_settings.png)
+
+***Creating a Stores Tooltip Page***
+
+To allow users to be able to see each store's year-to-date profit performance against the profit target just by hovering the mouse over a store on the map.
+![alt text](/images-readme/capt_map_tooltip.png)
+
+Upon hovering on a specific location, the map shows a gauge visual of `Profit YTD` vs. target. This is achieved by creating a separate page in the report (called *Store ToolTip*) and linking it to map under the **Tooltips** field (see map settings picture in main section). 
+
+![alt text](/images-readme/tooltip_final.png)
+
  
 ***Creating a Stores Drillthrough Page***
 
-To make it easy for the region managers to check on the progress of a given store, we need to create a drillthrough page that summarises each store's performance. This page should open once the user click on a specific store on the map. 
-
-This drilltrhough page should be created as a new page in the report, and designed as drilltrough page. 
- 
+To make it easy for the region managers to check on the progress of a given store, we need to create a drillthrough page that summarises each store's performance. 
 ![alt text](/images-readme/drilltrhough_final.png)
-![alt text](/images-readme/drilltrhough_settings.png)
+
+This page should open once the user click on a specific store on the map. 
 ![alt text](/images-readme/map_drilltrhough.png)
- 
-***Creating a Stores Tooltip Page***
- 
- To allow users to be able to see each store's year-to-date profit performance against the profit target just by hovering the mouse over a store on the map.
 
- ![alt text](/images-readme/tooltip_final.png)
+This drillthrough page should be created as a new page in the report, called *Stores Drillthrough*. Once created, open the format pane and expand the Page information tab. Set the Page type to Drillthrough and set Drill through when to Used as category. Set the 'Drill through from' field to `[Country Region]`. 
 
- 
-### Fixing Cross-filtering and Navigation
+![alt text](/images-readme/drilltrhough_settings.png)
+
+
+### 6.5. Fixing Cross-filtering and Navigation
 
 ***Crossfiltering***
 

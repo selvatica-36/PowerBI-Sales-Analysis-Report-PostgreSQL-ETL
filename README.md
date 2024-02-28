@@ -20,7 +20,7 @@ This documentation will also include a detailed guide into Power BI data modelli
 ### Project Preview
 This interactive and comprehensive Power BI report contains four pages, including an Executive Summary, a Customer Detail Page, a Product Detail Page and a Stores Map.
 
-
+![alt text](/images-readme/report_preview.png)
  
 ## Table of Contents
 1. [Setting Up](#1-setting-up)
@@ -44,6 +44,7 @@ This interactive and comprehensive Power BI report contains four pages, includin
 
     6.5. [Fixing Crossfiltering and Navigation](#65-fixing-cross-filtering-and-navigation)
 7. [SQL Metrics for Users Outside the Company](#7-sql-metrics-for-users-outside-the-company)
+8. [License information](#8-license-information)
 
 ## 1. Setting Up
  
@@ -62,11 +63,11 @@ Later in the project, we will be connecting remotely to a database stored in Azu
 These are the files you will find in this repository:
 - Main Power BI Report: `power_BI_report.pbix`
 - **SQL-queries** folder, containing:
-    - SQL file to check table and column names: `check_table_and_col_names.sql`
+    - SQL sessionfile containing all queries: `all-queries-azure.session.sql`
     - Python script to automate extraction of column names into csv files for all tables in the dataset, using psycopg2 library: `extract_col_names.py`
-    - Python utilities to connect to database and extract information, folowing OOP principles: `database_utils.py`
+    - Python class utilities to connect to database and extract information: `database_utils.py`
     - **database-info** folder, containing all csv files extracted. Most files are named as {table name}_columns.csv: they list all column names in each dataset table. Also contains a `table-list.csv` file, containing a list of all tables in the database.
-    - **client-queries** folder, containing the sql queries (.sql files) and answers (.csv files) to some key stakeholder questions.
+    - **client-queries** folder, containing all answers to client queries (.csv files).
 - This `README.md` file.
 - `.gitignore` file
 
@@ -414,10 +415,27 @@ The questions we have answered here are:
  - ***Question 3***: Which German store type had the highest revenue for 2022? 
 
  - ***Question 4***: Create a view where the rows are the store types and the columns are the total sales, percentage of total sales and the count of orders. 
- 
+
  - ***Question 5***: Which product category generated the most profit for the "Wiltshire, UK" region in 2021?
 
+As an example, the query for question 5 is:
+```
+SELECT 
+    SUM(o.product_quantity * (dp.sale_price - dp.cost_price)) AS "Profit", 
+    dp.category AS "Product Category"
+FROM orders o
+INNER JOIN dim_product dp ON dp.product_code = o.product_code
+INNER JOIN dim_store ds ON ds.store_code = o.store_code
+INNER JOIN dim_date dd ON dd.date = o.order_date
+WHERE dd.year = '2021' AND ds.full_region = 'Wiltshire, UK'
+GROUP BY "Product Category"
+ORDER BY "Profit" DESC
+LIMIT 1;
+```
 
+## 8. License information
+
+This is an open source public repository. The dataset was obtained from Aicore. AiCore provided the necessary credentials to connect to Azure SQL databse (these credentials are not publicly available).
 
 
 

@@ -24,7 +24,7 @@ This interactive and comprehensive Power BI report contains four pages, includin
  
 ## Set up and Instructions
 
-Check out the wiki. Here you will find a detailed step-by-step guide to the project, including installation instructions, ETL pipeline and visuals.
+For the full detailed step-by-step guide to the project, including installation instructions, ETL pipeline and visuals, please check the [GitHub Wiki](https://github.com/selvatica-36/PowerBI-ecommerce-report/wiki).
 
 ## Currently working on
 - Developing a data story and case analysis study to include in this README file. *Come back again soon!*

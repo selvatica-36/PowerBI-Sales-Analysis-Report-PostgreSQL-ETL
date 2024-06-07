@@ -78,3 +78,23 @@ WHERE dd.year = '2021' AND ds.full_region = 'Wiltshire, UK'
 GROUP BY "Product Category"
 ORDER BY "Profit" DESC
 LIMIT 1;
+
+
+-- Question 6: What are the most frequently ordered products by customer?
+WITH count_products_cte AS (
+    SELECT user_id, product_code, COUNT(product_code) AS product_count
+    FROM orders
+    GROUP BY user_id, product_code
+    ORDER BY user_id ASC),
+    
+    product_rank_cte AS (
+        SELECT user_id, product_code,
+               DENSE_RANK() OVER(PARTITION BY user_id ORDER BY product_count DESC) AS rank
+        FROM count_products_cte
+    )
+SELECT c2.user_id, c2.product_code, p.description
+FROM product_rank_cte c2
+INNER JOIN dim_product p ON c2.product_code = p.product_code
+WHERE rank = 1;
+
+

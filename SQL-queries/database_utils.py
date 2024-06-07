@@ -55,5 +55,5 @@ class InfoExtractor(DatabaseConnector):
 
 if __name__ == "__main__":
     output_folder = '/Users/silviaaragon/Aicore/Online-Shopping-in-Retail-Report/SQL-queries/database-info'
-    exporter = InfoExtractor(output_folder)
+    exporter = InfoExtractor(output_folder=output_folder)
     exporter.export_all_table_columns()

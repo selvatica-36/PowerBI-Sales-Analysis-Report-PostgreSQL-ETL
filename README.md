@@ -4,14 +4,16 @@
 ### Stack
 ![Power bi](https://img.shields.io/badge/power_BI-FF9900?style=for-the-badge&logo=powerbi&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/postgresql-3776AB?style=for-the-badge&logo=postgresql&logoColor=white) ![Git](https://img.shields.io/badge/Git-B1361E?style=for-the-badge&logo=git&logoColor=white) ![VSCode](https://img.shields.io/badge/VSCode-2962FF?style=for-the-badge&logo=visual%20studio&logoColor=white) ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white) 
 
-NOTE: the data presented here is from a fictitious company and has been fabricated. It is NOT sensitive data from real customers.
 ## Executive Summary:
+Using Power BI and Power Query, I pulled data from 6 different sources (including Azure Cloud) and created a relational database model and an Microsoft Power BI report to monitor sales performance across the organisation. The 4-page report is interactive and filterable, and uses historical data from 2010-2023 sales to track relevant KPIs and forecast their performance in the near future. 
 
+I also created custom SQL queries to access the centralised Azure database from outside the Power BI environment. Using Python and OOP principles, I built a DatabaseConnector class to automate custom SQL queries when needed.
 
+*NOTE: the data presented here is from a fictitious company and has been fabricated. It is **NOT sensitive** data from real customers.*
 
 ## Business Problem:
 
-*GlobalMart* is a (*fictitious*) multinational retail company with multiple stores across the United Kingdomm, Germany and the US. They need someone to build an end-to-end business intelligence solution from the ground up, using raw data containing information about sales, customers, products and store locations. Up until now they have been tracking sales manually, and their raw data is spread out in different platforms (Azure SQL database, Blob Storage) and formats (.csv files). 
+*GlobalMart* is a multinational retail company with multiple stores across the United Kingdomm, Germany and the US. They need someone to build an end-to-end business intelligence solution from the ground up, using raw data containing information about sales, customers, products and store locations. Up until now they have been tracking sales manually, and their raw data is spread out in different platforms (Azure SQL database, Blob Storage) and formats (.csv files). 
 
 My goals are to:
 1. Design, build and deploy a Power BI interactive report to share across the organisation.
@@ -22,7 +24,7 @@ This interactive and comprehensive Power BI report contains four pages, includin
 
 ![alt text](/images-readme/project-preview.png)
 
-## The Solution
+## The Solution:
 
 ### Methodology
 
@@ -33,7 +35,7 @@ This interactive and comprehensive Power BI report contains four pages, includin
 STAR-Schema data model:
 ![alt text](/images-readme/data_model.png)
 
-2. Build Power BI report containing 4 pages including an executive summary. The report is interactive and allows easy navigation and filtering.
+2. Build **Power BI report** containing 4 pages including an executive summary. The report is interactive and allows easy navigation and filtering.
 4. Create SQL queries to answer client questions by pulling data from Azure database without the need for Power BI Service. Can automate this process by creating a custom python class to connect to database (DatabaseConnector Class).
 
 ```
@@ -61,7 +63,7 @@ FROM(
 
 ### Skills
 
-`Power BI`: DAX, ETL, calculated columns, functions and measures, data visualization, data modeling
+`Power BI`: DAX, ETL, calculated columns, functions and measures, data visualisation, data modeling
 
 `SQL`: CTEs, joins, window functions (e.g. DENSE_RANK(), partitions), aggregate functions
 

@@ -78,7 +78,7 @@ FROM(
 For the full detailed step-by-step guide to the project, including installation instructions, ETL pipeline and visuals, please check the [GitHub Wiki](https://github.com/selvatica-36/PowerBI-ecommerce-report/wiki).
 
 ## Currently working on
-- Embedding the dashboard into Power BI Service.
+- Fixing the map display in the live dashboard (Power BI Service).
 
 ## License information
 

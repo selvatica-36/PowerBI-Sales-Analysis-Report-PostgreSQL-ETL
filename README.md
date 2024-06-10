@@ -6,7 +6,7 @@
 
 ## Executive Summary:
 
-[Link to live dashboard in Power BI Service](https://app.powerbi.com/view?r=eyJrIjoiOGJjNjA5NDQtMjE2YS00MzhmLTk3MmEtNjg3MjQ5Yzc5MGY3IiwidCI6IjI1Y2UwMjYxLWJiZDYtNDljZC1hMWUyLTU0MjYwODg2ZDE1OSJ9)
+[Link to live dashboard in Power BI Service](https://app.powerbi.com/reportEmbed?reportId=0a0c6097-c720-4fe2-bbd7-99ef0e483a7c&autoAuth=true&ctid=25ce0261-bbd6-49cd-a1e2-54260886d159)
 
 Using Power BI and Power Query, I pulled data from 6 different sources (including Azure Cloud) and created a relational database model and an Microsoft Power BI report to monitor sales performance across the organisation. The 4-page report is interactive and filterable, and uses historical data from 2010-2023 sales to track relevant KPIs and forecast their performance in the near future. 
 

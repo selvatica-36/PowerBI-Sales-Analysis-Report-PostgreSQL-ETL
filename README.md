@@ -14,6 +14,11 @@ I also created custom SQL queries to access the centralised Azure database from 
 
 *NOTE: the data presented here is from a fictitious company and has been fabricated. It is **NOT sensitive** data from real customers.*
 
+#### Power BI Report Preview
+This interactive and comprehensive Power BI report contains four pages, including an Executive Summary, a Customer Detail Page, a Product Detail Page and a Stores Map.
+
+![alt text](/images-readme/project-preview.png)
+
 ## Business Problem:
 
 *GlobalMart* is a multinational retail company with multiple stores across the United Kingdomm, Germany and the US. They need someone to build an end-to-end business intelligence solution from the ground up, using raw data containing information about sales, customers, products and store locations. Up until now they have been tracking sales manually, and their raw data is spread out in different platforms (Azure SQL database, Blob Storage) and formats (.csv files). 
@@ -21,11 +26,6 @@ I also created custom SQL queries to access the centralised Azure database from 
 My goals are to:
 1. Design, build and deploy a Power BI interactive report to share across the organisation.
 2. Create and automate SQL queries so clients can query the centralised database from outside the Power BI environment.
-
-#### Power BI Report Preview
-This interactive and comprehensive Power BI report contains four pages, including an Executive Summary, a Customer Detail Page, a Product Detail Page and a Stores Map.
-
-![alt text](/images-readme/project-preview.png)
 
 ## The Solution:
 
